@@ -6,7 +6,7 @@ from Game_Logic import run_game
 def main():
     pygame.init()
     clock = pygame.time.Clock()
-    res = (640, 480)
+    res = (800, 640)
     screen = pygame.display.set_mode(res)
 
     smallfont = pygame.font.SysFont('Comic Sans', 25)

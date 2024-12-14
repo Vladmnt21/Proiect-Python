@@ -2,6 +2,8 @@ import pygame
 import json
 import sys
 
+#cod
+
 # Global variables
 nGButton_x, nGButton_y, nGButton_width, nGButton_height = 250, 180, 140, 40
 cGButton_x, cGButton_y, cGButton_width, cGButton_height = 220, 240, 200, 40
