@@ -2,21 +2,20 @@ import pygame
 import sys
 
 class Wall:
-    def __init__(self, x, y, width, height):
-        self.x = x
-        self.y = y
-        self.width = width
-        self.height = height
+    def __init__(wall, x, y, width, height):
+        wall.x = x
+        wall.y = y
+        wall.width = width
+        wall.height = height
 
-    def draw(self, screen):
-        pygame.draw.rect(screen, (0, 0, 255), (self.x, self.y, self.width, self.height))
+    def draw(wall, screen):
+        pygame.draw.rect(screen, (0, 0, 255), (wall.x, wall.y, wall.width, wall.height))
 
 def run_game(screen, player_data):
     x, y = 200, 200
     width, height = 20, 20
     vel = 2
     run = True
-    name = player_data["Player"]
     
     walls = [
         Wall(785, 10, 5, 620),
@@ -26,10 +25,12 @@ def run_game(screen, player_data):
     ]
     
     pygame.font.init()
-    font = pygame.font.SysFont('Comic Sans', 20)
+    font = pygame.font.SysFont('Comic Sans', 12)
 
     while run:
         pygame.time.delay(10)
+        name = f"{player_data["Player"]} ({x},{y})"
+        
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -77,6 +78,7 @@ def run_game(screen, player_data):
         if not collision:
             x, y = next_x, next_y
 
+        coords = f"{x},{y}"
         screen.fill((0, 0, 0))
         if player_data["Player"] == "Nibber":
             pygame.draw.rect(screen, (20, 55, 0), (x, y, width, height))
@@ -87,9 +89,23 @@ def run_game(screen, player_data):
             wall.draw(screen)
 
         name_surface = font.render(name, True, (255, 255, 255))
-        name_rect = name_surface.get_rect(center=(x + width // 2, y - 25))
+        screen_width = 800
+        screen_height = 640
+        name_width, name_height = name_surface.get_size()
+        
+        if x + width // 2 + name_width // 2 > screen_width:
+            name_x = screen_width - name_width // 2
+        elif x + width // 2 - name_width // 2 < 0:
+            name_x = name_width // 2
+        else:
+            name_x = x + width // 2
+            
+            
+        name_y = y - 10
+        
+        name_rect = name_surface.get_rect(center=(name_x, name_y))
         screen.blit(name_surface, name_rect.topleft)
-
+        
         pygame.display.update()
 
 if __name__ == "__main__":
