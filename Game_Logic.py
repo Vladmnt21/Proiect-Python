@@ -19,7 +19,7 @@ def run_game(screen, player_data):
     name = player_data["Player"]
     
     walls = [
-        #Wall(785, 10, 5, 620),
+        Wall(785, 10, 5, 620),
         Wall(10, 625, 780, 5),
         Wall(10, 10, 5, 620),
         Wall(10, 10, 780, 5)
