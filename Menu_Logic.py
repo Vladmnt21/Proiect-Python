@@ -8,10 +8,12 @@ nGButton_x, nGButton_y, nGButton_width, nGButton_height = 330, 240, 140, 40
 cGButton_x, cGButton_y, cGButton_width, cGButton_height = 300, 320, 200, 40
 eButton_x, eButton_y, eButton_width, eButton_height = 350, 400, 100, 40
 saveButton_x, saveButton_y, saveButton_width, saveButton_height = 420, 320, 100, 40
-fileButton_x, fileButton_y, fileButton_width, fileButton_height = 300, 240, 200, 40
+fileButton_x, fileButton_y, fileButton_width, fileButton_height = 100, 240, 200, 40
+continue_save_but = []
+continue_save_name = []
+saves = []
 eol = False
 nr_sav = 0
-# fileButton = (300, 240, 200, 40)
 text_color = (255, 255, 255)
 color_butHover = (170, 170, 170)
 color_but = (100, 100, 100)
@@ -59,7 +61,8 @@ def draw_newgame_menu(screen, user_text, input_rect, active, error_message, smal
         error_rect = error_surface.get_rect(center=(screen.get_width() / 2, screen.get_height() / 2 + 50))
         screen.blit(error_surface, error_rect)
 
-def draw_continuegame_menu(screen, gTitle, fileButton_x, fileButton_y, fileButton_width, fileButton_height, mouse, smallfont, nrOfSaves):
+def draw_continuegame_menu(screen, gTitle, fileButton_x, fileButton_y, fileButton_width, fileButton_height, mouse, smallfont):
+    global nr_sav, eol, continue_save_but, continue_save_name, saves
     saves_path = "Saves/"
     save_list = []
     
@@ -70,15 +73,23 @@ def draw_continuegame_menu(screen, gTitle, fileButton_x, fileButton_y, fileButto
             with open(save_path, 'r') as file:
                 save = json.load(file)
                 save_list.append(save)
+                
+                if not eol:
+                    nr_sav += 1
+                    continue_save_name.append(saveName)
 
-    global eol
-    global nr_sav
+    saves = save_list
 
     for save in save_list:
         if not eol:
-            nr_sav += 1
-        draw_button(screen, fileButton_x, fileButton_y, fileButton_width, fileButton_height, save["Player"], mouse, smallfont)
-        fileButton_y += 70
+            continue_save_but.append((fileButton_x, fileButton_y, fileButton_width, fileButton_height))
+        
+        if fileButton_y < 520:
+            fileButton_y += 70
+        else:
+            fileButton_x += 220
+            fileButton_y = 240
+        draw_button(screen, fileButton_x, fileButton_y, fileButton_width, fileButton_height, f"{save["Player"]} -- Lvl {save["Lvl"]}", mouse, smallfont)
     
     eol = True
     
@@ -92,22 +103,27 @@ def handle_events(nGButton_press, cGbutton_press, player_data, user_text, active
         if ev.type == pygame.QUIT:
             pygame.quit()
             sys.exit()
+            
         if ev.type == pygame.MOUSEBUTTONDOWN:
             mouse = pygame.mouse.get_pos()
             if not nGButton_press and not cGbutton_press:
                 if eButton_x <= mouse[0] <= eButton_x + eButton_width and eButton_y <= mouse[1] <= eButton_y + eButton_height:
                     pygame.quit()
                     sys.exit()
+                    
                 if nGButton_x <= mouse[0] <= nGButton_x + nGButton_width and nGButton_y <= mouse[1] <= nGButton_y + nGButton_height:
                     nGButton_press = True
                     print("New Game!")
+                    
                 if cGButton_x <= mouse[0] <= cGButton_x + cGButton_width and cGButton_y <= mouse[1] <= cGButton_y + cGButton_height:
                     cGbutton_press = True
+                    
             if nGButton_press:
                 if input_rect.collidepoint(ev.pos):
                     active = True
                 else:
                     active = False
+                    
             if saveButton_x <= mouse[0] <= saveButton_x + saveButton_width and saveButton_y <= mouse[1] <= saveButton_y + saveButton_height:
                 if len(user_text) > 3:
                     new_game(player_data, user_text)
@@ -116,9 +132,21 @@ def handle_events(nGButton_press, cGbutton_press, player_data, user_text, active
                     game_state = "GAME"
                 else:
                     error_message = "Minim 4 caractere la nume!" 
+                    
             if cGbutton_press:
-                nrOfSaves = draw_continuegame_menu(screen, gTitle, fileButton_x, fileButton_y, fileButton_width, fileButton_height, mouse, smallfont, nrOfSaves)
+                
+                nrOfSaves = draw_continuegame_menu(screen, gTitle, fileButton_x, fileButton_y, fileButton_width, fileButton_height, mouse, smallfont)
                 print(nrOfSaves)
+                print(continue_save_name)
+                print(continue_save_but)
+                print(saves)
+                
+                for i in range(nrOfSaves):
+                    if continue_save_but[i][0] <= mouse[0] <= continue_save_but[i][0] + continue_save_but[i][2] and continue_save_but[i][1] <= mouse[1] <= continue_save_but[i][1] + continue_save_but[i][3]:
+                        print(continue_save_name[i])
+                        player_data.update(saves[i])
+                        game_state = "GAME"
+                
         if ev.type == pygame.KEYDOWN:
             if active:
                 # Check for backspace

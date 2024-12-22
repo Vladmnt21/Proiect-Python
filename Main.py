@@ -14,7 +14,7 @@ def main():
 
     gTitle = titlefont.render('Titlu Joc', True, (255, 255, 255))
 
-    fileButton_x, fileButton_y, fileButton_width, fileButton_height = 300, 240, 200, 40
+    fileButton_x, fileButton_y, fileButton_width, fileButton_height = 80, 170, 200, 40
     nGButton_press = False
     cGbutton_press = False
     user_text = ''
@@ -48,10 +48,10 @@ def main():
                     new_game(player_data, user_text)
                     
             elif cGbutton_press:
-                nrOfSaves = draw_continuegame_menu(screen, gTitle, fileButton_x, fileButton_y, fileButton_width, fileButton_height, mouse, smallfont, nrOfSaves)
+                draw_continuegame_menu(screen, gTitle, fileButton_x, fileButton_y, fileButton_width, fileButton_height, mouse, smallfont)
                 
                 if game_state == "GAME":
-                    continue_game(player_data)
+                    run_game(screen, player_data)
                     
         elif game_state == "GAME":
             run_game(screen, player_data)
